@@ -10,9 +10,6 @@ const fs = require('fs');
 const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const { Resend } = require("resend");
-
-const resend = new Resend("re_BPvPMXhx_Mpsa9YFmjv4T5jdCi2KimgfJ");
 
 const secretKey = process.env.secretkey;
 
@@ -54,20 +51,20 @@ const emailSecure = process.env.EMAIL_SECURE
   ? process.env.EMAIL_SECURE === 'true'
   : emailPort === 465; // true for port 465, false for 587
 
-// const transporter = nodemailer.createTransport({
-//   host: emailHost,
-//   port: emailPort,
-//   secure: emailSecure,
-//   auth: {
-//     user: emailUser,
-//     pass: emailPass,
-//   },
-// });
+const transporter = nodemailer.createTransport({
+  host: emailHost,
+  port: emailPort,
+  secure: emailSecure,
+  auth: {
+    user: emailUser,
+    pass: emailPass,
+  },
+});
 
 // Log SMTP readiness once on boot (useful on Render)
-// transporter.verify()
-//   .then(() => console.log(`✅ SMTP server ready at ${emailHost}:${emailPort} (secure=${emailSecure})`))
-//   .catch((err) => console.error('❌ SMTP connection failed:', err.message));
+transporter.verify()
+  .then(() => console.log(`✅ SMTP server ready at ${emailHost}:${emailPort} (secure=${emailSecure})`))
+  .catch((err) => console.error('❌ SMTP connection failed:', err.message));
 
 // Send forgot password OTP email
 const sendOTPEmail = async (email, otp) => {
@@ -89,123 +86,37 @@ const sendOTPEmail = async (email, otp) => {
     `
   };
 
-  // const info = await transporter.sendMail(mailOptions);
-  // console.log('✅ Forgot password OTP sent to:', email);
-  // return info;
+  const info = await transporter.sendMail(mailOptions);
+  console.log('✅ Forgot password OTP sent to:', email);
+  return info;
 };
 
 // Send registration OTP email with better logging
-// const sendRegistrationOTPEmail = async (email, otp, name) => {
-//    console.log('📧 Preparing to send registration OTP email...');
-//   console.log('📧 To:', email);
-//   console.log('🔢 OTP:', otp);
-//   console.log('👤 Name:', name);
-
-//   const mailOptions = {
-//     from: emailFrom,
-//     to: email,
-//     subject: `EventHub - Email Verification Code: ${otp}`,
-//     text: `
-// Hi ${name},
-
-// Welcome to EventHub!
-
-// Your verification code is: ${otp}
-
-// This code will expire in 10 minutes.
-
-// If you didn't request this, please ignore this email.
-
-// Best regards,
-// EventHub Team
-//     `,
-//     html: `
-//       <!DOCTYPE html>
-//       <html>
-//       <head>
-//         <meta charset="UTF-8">
-//         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//       </head>
-//       <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-//         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 50px 0;">
-//           <tr>
-//             <td align="center">
-//               <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                
-//                 <!-- Header -->
-//                 <tr>
-//                   <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
-//                     <h1 style="margin: 0; font-size: 28px; color: #ffffff;">🎉 Welcome to EventHub!</h1>
-//                   </td>
-//                 </tr>
-                
-//                 <!-- Content -->
-//                 <tr>
-//                   <td style="padding: 40px 30px; text-align: center;">
-//                     <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 20px 0;">
-//                       Hi <strong>${name}</strong>,
-//                     </p>
-//                     <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 20px 0;">
-//                       Thank you for signing up! Please verify your email address using this OTP:
-//                     </p>
-                    
-//                     <!-- OTP Box - FIXED COLORS -->
-//                     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; font-size: 36px; font-weight: bold; letter-spacing: 8px; padding: 20px; border-radius: 10px; display: inline-block; margin: 20px 0;">
-//                       ${otp}
-//                     </div>
-                    
-//                     <!-- Warning Box -->
-//                     <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; text-align: left;">
-//                       <p style="margin: 0; color: #856404;">
-//                         ⏰ <strong>Important:</strong> This OTP expires in 10 minutes.
-//                       </p>
-//                     </div>
-                    
-//                     <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 20px 0;">
-//                       If you didn't request this, please ignore this email.
-//                     </p>
-//                   </td>
-//                 </tr>
-                
-//                 <!-- Footer -->
-//                 <tr>
-//                   <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
-//                     <p style="margin: 0; color: #6c757d; font-size: 14px;">
-//                       EventHub - Your Gateway to Amazing Events
-//                     </p>
-//                     <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 14px;">
-//                       © ${new Date().getFullYear()} EventHub. All rights reserved.
-//                     </p>
-//                   </td>
-//                 </tr>
-                
-//               </table>
-//             </td>
-//           </tr>
-//         </table>
-//       </body>
-//       </html>
-//     `
-//   };
-
-//   // try {
-//   //   const info = await transporter.sendMail(mailOptions);
-//   //   console.log('✅ Registration OTP email sent successfully!');
-//   //   console.log('📬 Message ID:', info.messageId);
-//   //   console.log('📧 Accepted:', info.accepted);
-//   //   return info;
-//   // } catch (error) {
-//   //   console.error('❌ Failed to send registration OTP email:', error);
-//   //   throw error;
-//   // }
-// };
 const sendRegistrationOTPEmail = async (email, otp, name) => {
-  try {
-    const data = await resend.emails.send({
-      from: "GALA <onboarding@resend.dev>",
-      to: email,
-      subject: `Your OTP Code: ${otp}`,
-     html: `
+   console.log('📧 Preparing to send registration OTP email...');
+  console.log('📧 To:', email);
+  console.log('🔢 OTP:', otp);
+  console.log('👤 Name:', name);
+
+  const mailOptions = {
+    from: emailFrom,
+    to: email,
+    subject: `EventHub - Email Verification Code: ${otp}`,
+    text: `
+Hi ${name},
+
+Welcome to EventHub!
+
+Your verification code is: ${otp}
+
+This code will expire in 10 minutes.
+
+If you didn't request this, please ignore this email.
+
+Best regards,
+EventHub Team
+    `,
+    html: `
       <!DOCTYPE html>
       <html>
       <head>
@@ -272,16 +183,19 @@ const sendRegistrationOTPEmail = async (email, otp, name) => {
       </body>
       </html>
     `
-    });
+  };
 
-    console.log("📨 OTP sent to:", email);
-    return data;
-  } catch (err) {
-    console.error("❌ Email sending error:", err);
-    throw err;
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Registration OTP email sent successfully!');
+    console.log('📬 Message ID:', info.messageId);
+    console.log('📧 Accepted:', info.accepted);
+    return info;
+  } catch (error) {
+    console.error('❌ Failed to send registration OTP email:', error);
+    throw error;
   }
 };
-
 
 // Multer configuration for profile pictures
 const storage = multer.diskStorage({
