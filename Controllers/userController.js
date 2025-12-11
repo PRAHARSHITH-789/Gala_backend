@@ -41,23 +41,35 @@ setInterval(() => {
 // Generate OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-// Email configuration
+// Email configuration (Render-friendly: uses explicit SMTP host/port and env vars)
+const emailHost = process.env.EMAIL_HOST || 'smtp.gmail.com';
+const emailPort = Number(process.env.EMAIL_PORT || 587);
+const emailUser = process.env.EMAIL_USER || 'siddhu.vakkapatla@gmail.com';
+const emailPass = process.env.EMAIL_PASS || 'xuxg bdif npib ebaj';
+const emailFrom = process.env.EMAIL_FROM || `"EventHub" <${emailUser}>`;
+const emailSecure = process.env.EMAIL_SECURE
+  ? process.env.EMAIL_SECURE === 'true'
+  : emailPort === 465; // true for port 465, false for 587
+
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,       // Render supports only this
-  secure: false,   // Required for TLS
+  host: emailHost,
+  port: emailPort,
+  secure: emailSecure,
   auth: {
-    user: "siddhu.vakkapatla@gmail.com",
-    pass: "ngan sgyp ubla hfxe",
+    user: emailUser,
+    pass: emailPass,
   },
 });
 
-
+// Log SMTP readiness once on boot (useful on Render)
+transporter.verify()
+  .then(() => console.log(`✅ SMTP server ready at ${emailHost}:${emailPort} (secure=${emailSecure})`))
+  .catch((err) => console.error('❌ SMTP connection failed:', err.message));
 
 // Send forgot password OTP email
 const sendOTPEmail = async (email, otp) => {
   const mailOptions = {
-    from: '"EventHub" <noorjjj2006@gmail.com>',
+    from: emailFrom,
     to: email,
     subject: "EventHub - Password Reset OTP",
     text: `Your OTP is: ${otp}. It will expire in 5 minutes.`,
@@ -87,7 +99,7 @@ const sendRegistrationOTPEmail = async (email, otp, name) => {
   console.log('👤 Name:', name);
 
   const mailOptions = {
-    from: '"EventHub" <noorjjj2006@gmail.com>',
+    from: emailFrom,
     to: email,
     subject: `EventHub - Email Verification Code: ${otp}`,
     text: `
