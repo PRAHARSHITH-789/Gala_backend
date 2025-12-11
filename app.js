@@ -21,14 +21,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: process.env.ORIGIN, 
-    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
-  })
-);
+app.use(cors({
+  origin: "http://localhost:5173",   // Your frontend URL
+  credentials: true,                 // Allow cookies / credentials
+}));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // PUBLIC ROUTES (No authentication required)

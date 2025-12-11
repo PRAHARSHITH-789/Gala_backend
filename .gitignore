@@ -8,7 +8,7 @@ yarn.lock
 .vscode/
 
 # Ignore environment variables
-.env
+
 
 # Ignore logs
 logs/

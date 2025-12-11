@@ -4,8 +4,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "noorjjj2006@gmail.com",
-    pass: "crfj epkw eblp rata",
+    user: "siddhu.vakkapatla@gmail.com",
+    pass: "wtop oupy byia ceif",
   },
 });
 
@@ -21,7 +21,7 @@ const emailService = {
       });
       
       const mailOptions = {
-        from: "noorjjj2006@gmail.com",
+        from: "siddhu.vakkapatla@gmail.com",
         to: user.email,
         subject: `🎫 Booking Confirmed - ${event.title}`,
         html: `
