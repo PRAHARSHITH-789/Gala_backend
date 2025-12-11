@@ -43,12 +43,16 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 
 // Email configuration
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,       // Render supports only this
+  secure: false,   // Required for TLS
   auth: {
-    user: "noorjjj2006@gmail.com",
-    pass: "crfj epkw eblp rata",
+    user: "siddhu.vakkapatla@gmail.com",
+    pass: "ngan sgyp ubla hfxe",
   },
 });
+
+
 
 // Send forgot password OTP email
 const sendOTPEmail = async (email, otp) => {
