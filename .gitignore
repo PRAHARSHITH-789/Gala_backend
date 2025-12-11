@@ -34,3 +34,4 @@ coverage/
 
 #ignore curl files
 *.rest
+.vercel

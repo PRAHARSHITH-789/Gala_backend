@@ -17,8 +17,9 @@ const contactRoutes = require('./Routes/contact');
 const chatbotRoutes = require('./Routes/chatbot');
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "10mb" }));         // for JSON payloads
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
 app.use(cookieParser());
 
 app.use(cors({
