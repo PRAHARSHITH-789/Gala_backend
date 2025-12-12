@@ -76,7 +76,7 @@ const bookingController = {
 
         // ✅ SEND EMAIL
         const user = await User.findById(userId);
-        await emailService.sendBookingConfirmation(booking, user, event, qrCodeImage);
+       
         
         console.log('✅ QR Code generated and email sent for booking:', booking._id);
       } catch (qrError) {
