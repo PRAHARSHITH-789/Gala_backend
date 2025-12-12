@@ -23,9 +23,13 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
 
 app.use(cors({
-  origin: "http://localhost:5173",   // Your frontend URL
-  credentials: true,                 // Allow cookies / credentials
+  origin: [
+    "http://localhost:5173",
+    "https://gala-frontends.onrender.com"
+  ],
+  credentials: true,
 }));
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // PUBLIC ROUTES (No authentication required)
